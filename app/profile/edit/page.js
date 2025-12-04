@@ -5,8 +5,21 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
 import {
-  User, Mail, MapPin, Phone, Linkedin, Github, Globe,
-  Plus, X, Save, ArrowLeft, Award, Languages, Briefcase, Heart
+  User,
+  Mail,
+  MapPin,
+  Phone,
+  Linkedin,
+  Github,
+  Globe,
+  Plus,
+  X,
+  Save,
+  ArrowLeft,
+  Award,
+  Languages,
+  Briefcase,
+  Heart
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -70,7 +83,9 @@ export default function EditProfilePage() {
 
   const loadProfile = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
       if (!user) {
         router.push('/auth/login')
         return
@@ -87,10 +102,7 @@ export default function EditProfilePage() {
       if (profileData) setProfile(profileData)
 
       // Load skills
-      const { data: skillsData } = await supabase
-        .from('skills')
-        .select('*')
-        .eq('user_id', user.id)
+      const { data: skillsData } = await supabase.from('skills').select('*').eq('user_id', user.id)
       if (skillsData) setSkills(skillsData)
 
       // Load languages
@@ -113,10 +125,8 @@ export default function EditProfilePage() {
         .select('*')
         .eq('user_id', user.id)
       if (passionsData) setPassions(passionsData)
-
     } catch (error) {
-      console.error('Error loading profile:', error)
-      toast.error('Erreur lors du chargement du profil')
+      toast.error('Impossible de charger votre profil. Veuillez réessayer.')
     } finally {
       setLoading(false)
     }
@@ -125,10 +135,7 @@ export default function EditProfilePage() {
   const handleSaveProfile = async () => {
     setSaving(true)
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update(profile)
-        .eq('id', userId)
+      const { error } = await supabase.from('profiles').update(profile).eq('id', userId)
 
       if (error) throw error
       toast.success('Profil mis à jour avec succès !')
@@ -156,16 +163,13 @@ export default function EditProfilePage() {
       setNewSkill({ name: '', category: 'technique', level: 'intermediaire', years_experience: 0 })
       toast.success('Compétence ajoutée !')
     } catch (error) {
-      toast.error('Erreur lors de l\'ajout')
+      toast.error("Erreur lors de l'ajout")
     }
   }
 
-  const deleteSkill = async (id) => {
+  const deleteSkill = async id => {
     try {
-      const { error } = await supabase
-        .from('skills')
-        .delete()
-        .eq('id', id)
+      const { error } = await supabase.from('skills').delete().eq('id', id)
 
       if (error) throw error
       setSkills(skills.filter(s => s.id !== id))
@@ -192,16 +196,13 @@ export default function EditProfilePage() {
       setNewLanguage({ name: '', proficiency: 'B2' })
       toast.success('Langue ajoutée !')
     } catch (error) {
-      toast.error('Erreur lors de l\'ajout')
+      toast.error("Erreur lors de l'ajout")
     }
   }
 
-  const deleteLanguage = async (id) => {
+  const deleteLanguage = async id => {
     try {
-      const { error } = await supabase
-        .from('languages')
-        .delete()
-        .eq('id', id)
+      const { error } = await supabase.from('languages').delete().eq('id', id)
 
       if (error) throw error
       setLanguages(languages.filter(l => l.id !== id))
@@ -221,13 +222,12 @@ export default function EditProfilePage() {
       const projectData = {
         ...newProject,
         user_id: userId,
-        technologies: newProject.technologies ? newProject.technologies.split(',').map(t => t.trim()) : []
+        technologies: newProject.technologies
+          ? newProject.technologies.split(',').map(t => t.trim())
+          : []
       }
 
-      const { data, error } = await supabase
-        .from('projects')
-        .insert([projectData])
-        .select()
+      const { data, error } = await supabase.from('projects').insert([projectData]).select()
 
       if (error) throw error
       setProjects([...projects, data[0]])
@@ -243,16 +243,13 @@ export default function EditProfilePage() {
       })
       toast.success('Projet ajouté !')
     } catch (error) {
-      toast.error('Erreur lors de l\'ajout')
+      toast.error("Erreur lors de l'ajout")
     }
   }
 
-  const deleteProject = async (id) => {
+  const deleteProject = async id => {
     try {
-      const { error } = await supabase
-        .from('projects')
-        .delete()
-        .eq('id', id)
+      const { error } = await supabase.from('projects').delete().eq('id', id)
 
       if (error) throw error
       setProjects(projects.filter(p => p.id !== id))
@@ -279,16 +276,13 @@ export default function EditProfilePage() {
       setNewPassion({ name: '', description: '' })
       toast.success('Passion ajoutée !')
     } catch (error) {
-      toast.error('Erreur lors de l\'ajout')
+      toast.error("Erreur lors de l'ajout")
     }
   }
 
-  const deletePassion = async (id) => {
+  const deletePassion = async id => {
     try {
-      const { error } = await supabase
-        .from('passions')
-        .delete()
-        .eq('id', id)
+      const { error } = await supabase.from('passions').delete().eq('id', id)
 
       if (error) throw error
       setPassions(passions.filter(p => p.id !== id))
@@ -312,7 +306,10 @@ export default function EditProfilePage() {
       <div className="bg-white shadow-sm mb-8">
         <div className="max-w-5xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            <Link href="/dashboard" className="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
+            <Link
+              href="/dashboard"
+              className="flex items-center space-x-2 text-gray-600 hover:text-blue-600"
+            >
               <ArrowLeft className="w-5 h-5" />
               <span>Retour au dashboard</span>
             </Link>
@@ -338,13 +335,11 @@ export default function EditProfilePage() {
 
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nom complet *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Nom complet *</label>
               <input
                 type="text"
                 value={profile.full_name || ''}
-                onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
+                onChange={e => setProfile({ ...profile, full_name: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Jean Dupont"
               />
@@ -358,7 +353,7 @@ export default function EditProfilePage() {
               <input
                 type="text"
                 value={profile.location || ''}
-                onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+                onChange={e => setProfile({ ...profile, location: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Paris, France"
               />
@@ -372,7 +367,7 @@ export default function EditProfilePage() {
               <input
                 type="tel"
                 value={profile.phone || ''}
-                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                onChange={e => setProfile({ ...profile, phone: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="+33 6 12 34 56 78"
               />
@@ -386,7 +381,7 @@ export default function EditProfilePage() {
               <input
                 type="url"
                 value={profile.linkedin_url || ''}
-                onChange={(e) => setProfile({ ...profile, linkedin_url: e.target.value })}
+                onChange={e => setProfile({ ...profile, linkedin_url: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="https://linkedin.com/in/..."
               />
@@ -400,7 +395,7 @@ export default function EditProfilePage() {
               <input
                 type="url"
                 value={profile.github_url || ''}
-                onChange={(e) => setProfile({ ...profile, github_url: e.target.value })}
+                onChange={e => setProfile({ ...profile, github_url: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="https://github.com/..."
               />
@@ -414,7 +409,7 @@ export default function EditProfilePage() {
               <input
                 type="url"
                 value={profile.portfolio_url || ''}
-                onChange={(e) => setProfile({ ...profile, portfolio_url: e.target.value })}
+                onChange={e => setProfile({ ...profile, portfolio_url: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="https://monportfolio.com"
               />
@@ -422,12 +417,10 @@ export default function EditProfilePage() {
           </div>
 
           <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Bio
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
             <textarea
               value={profile.bio || ''}
-              onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+              onChange={e => setProfile({ ...profile, bio: e.target.value })}
               rows={4}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Parlez-nous de vous..."
@@ -439,7 +432,7 @@ export default function EditProfilePage() {
               type="checkbox"
               id="available"
               checked={profile.is_available}
-              onChange={(e) => setProfile({ ...profile, is_available: e.target.checked })}
+              onChange={e => setProfile({ ...profile, is_available: e.target.checked })}
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
             <label htmlFor="available" className="ml-2 text-sm text-gray-700">
@@ -461,13 +454,13 @@ export default function EditProfilePage() {
               <input
                 type="text"
                 value={newSkill.name}
-                onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })}
+                onChange={e => setNewSkill({ ...newSkill, name: e.target.value })}
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Nom de la compétence"
               />
               <select
                 value={newSkill.category}
-                onChange={(e) => setNewSkill({ ...newSkill, category: e.target.value })}
+                onChange={e => setNewSkill({ ...newSkill, category: e.target.value })}
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="technique">Technique</option>
@@ -477,7 +470,7 @@ export default function EditProfilePage() {
               </select>
               <select
                 value={newSkill.level}
-                onChange={(e) => setNewSkill({ ...newSkill, level: e.target.value })}
+                onChange={e => setNewSkill({ ...newSkill, level: e.target.value })}
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="debutant">Débutant</option>
@@ -489,7 +482,9 @@ export default function EditProfilePage() {
                 type="number"
                 min="0"
                 value={newSkill.years_experience}
-                onChange={(e) => setNewSkill({ ...newSkill, years_experience: parseInt(e.target.value) || 0 })}
+                onChange={e =>
+                  setNewSkill({ ...newSkill, years_experience: parseInt(e.target.value) || 0 })
+                }
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Années d'exp."
               />
@@ -505,8 +500,11 @@ export default function EditProfilePage() {
 
           {/* Skills List */}
           <div className="space-y-3">
-            {skills.map((skill) => (
-              <div key={skill.id} className="flex items-center justify-between bg-gray-50 rounded-lg p-4">
+            {skills.map(skill => (
+              <div
+                key={skill.id}
+                className="flex items-center justify-between bg-gray-50 rounded-lg p-4"
+              >
                 <div className="flex-1">
                   <div className="flex items-center space-x-3">
                     <span className="font-semibold text-gray-900">{skill.name}</span>
@@ -550,13 +548,13 @@ export default function EditProfilePage() {
               <input
                 type="text"
                 value={newLanguage.name}
-                onChange={(e) => setNewLanguage({ ...newLanguage, name: e.target.value })}
+                onChange={e => setNewLanguage({ ...newLanguage, name: e.target.value })}
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Langue"
               />
               <select
                 value={newLanguage.proficiency}
-                onChange={(e) => setNewLanguage({ ...newLanguage, proficiency: e.target.value })}
+                onChange={e => setNewLanguage({ ...newLanguage, proficiency: e.target.value })}
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               >
                 <option value="A1">A1 - Débutant</option>
@@ -579,8 +577,11 @@ export default function EditProfilePage() {
 
           {/* Languages List */}
           <div className="space-y-3">
-            {languages.map((lang) => (
-              <div key={lang.id} className="flex items-center justify-between bg-gray-50 rounded-lg p-4">
+            {languages.map(lang => (
+              <div
+                key={lang.id}
+                className="flex items-center justify-between bg-gray-50 rounded-lg p-4"
+              >
                 <div className="flex items-center space-x-3">
                   <span className="font-semibold text-gray-900">{lang.name}</span>
                   <span className="text-sm text-gray-600 bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
@@ -614,13 +615,13 @@ export default function EditProfilePage() {
               <input
                 type="text"
                 value={newProject.title}
-                onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+                onChange={e => setNewProject({ ...newProject, title: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Titre du projet"
               />
               <textarea
                 value={newProject.description}
-                onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                onChange={e => setNewProject({ ...newProject, description: e.target.value })}
                 rows={3}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Description"
@@ -628,7 +629,7 @@ export default function EditProfilePage() {
               <input
                 type="text"
                 value={newProject.technologies}
-                onChange={(e) => setNewProject({ ...newProject, technologies: e.target.value })}
+                onChange={e => setNewProject({ ...newProject, technologies: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Technologies (séparées par des virgules)"
               />
@@ -636,14 +637,14 @@ export default function EditProfilePage() {
                 <input
                   type="url"
                   value={newProject.url}
-                  onChange={(e) => setNewProject({ ...newProject, url: e.target.value })}
+                  onChange={e => setNewProject({ ...newProject, url: e.target.value })}
                   className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   placeholder="URL du projet"
                 />
                 <input
                   type="url"
                   value={newProject.github_url}
-                  onChange={(e) => setNewProject({ ...newProject, github_url: e.target.value })}
+                  onChange={e => setNewProject({ ...newProject, github_url: e.target.value })}
                   className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   placeholder="URL GitHub"
                 />
@@ -652,14 +653,14 @@ export default function EditProfilePage() {
                 <input
                   type="date"
                   value={newProject.start_date}
-                  onChange={(e) => setNewProject({ ...newProject, start_date: e.target.value })}
+                  onChange={e => setNewProject({ ...newProject, start_date: e.target.value })}
                   className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
                 <span className="text-gray-600">à</span>
                 <input
                   type="date"
                   value={newProject.end_date}
-                  onChange={(e) => setNewProject({ ...newProject, end_date: e.target.value })}
+                  onChange={e => setNewProject({ ...newProject, end_date: e.target.value })}
                   disabled={newProject.is_current}
                   className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
                 />
@@ -667,7 +668,7 @@ export default function EditProfilePage() {
                   <input
                     type="checkbox"
                     checked={newProject.is_current}
-                    onChange={(e) => setNewProject({ ...newProject, is_current: e.target.checked })}
+                    onChange={e => setNewProject({ ...newProject, is_current: e.target.checked })}
                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
                   <span className="text-sm text-gray-700">Projet en cours</span>
@@ -685,7 +686,7 @@ export default function EditProfilePage() {
 
           {/* Projects List */}
           <div className="space-y-4">
-            {projects.map((project) => (
+            {projects.map(project => (
               <div key={project.id} className="bg-gray-50 rounded-lg p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -694,7 +695,10 @@ export default function EditProfilePage() {
                     {project.technologies && project.technologies.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-2">
                         {project.technologies.map((tech, idx) => (
-                          <span key={idx} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                          <span
+                            key={idx}
+                            className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                          >
                             {tech}
                           </span>
                         ))}
@@ -702,12 +706,22 @@ export default function EditProfilePage() {
                     )}
                     <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
                       {project.url && (
-                        <a href={project.url} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
+                        <a
+                          href={project.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-blue-600"
+                        >
                           🔗 Voir le projet
                         </a>
                       )}
                       {project.github_url && (
-                        <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
+                        <a
+                          href={project.github_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:text-blue-600"
+                        >
                           <Github className="w-4 h-4 inline" /> GitHub
                         </a>
                       )}
@@ -741,13 +755,13 @@ export default function EditProfilePage() {
               <input
                 type="text"
                 value={newPassion.name}
-                onChange={(e) => setNewPassion({ ...newPassion, name: e.target.value })}
+                onChange={e => setNewPassion({ ...newPassion, name: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Nom de la passion"
               />
               <textarea
                 value={newPassion.description}
-                onChange={(e) => setNewPassion({ ...newPassion, description: e.target.value })}
+                onChange={e => setNewPassion({ ...newPassion, description: e.target.value })}
                 rows={2}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="Description (optionnel)"
@@ -764,8 +778,11 @@ export default function EditProfilePage() {
 
           {/* Passions List */}
           <div className="space-y-3">
-            {passions.map((passion) => (
-              <div key={passion.id} className="flex items-start justify-between bg-gray-50 rounded-lg p-4">
+            {passions.map(passion => (
+              <div
+                key={passion.id}
+                className="flex items-start justify-between bg-gray-50 rounded-lg p-4"
+              >
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900">{passion.name}</h3>
                   {passion.description && (
@@ -794,7 +811,9 @@ export default function EditProfilePage() {
             className="flex items-center space-x-2 bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50"
           >
             <Save className="w-5 h-5" />
-            <span>{saving ? 'Sauvegarde en cours...' : 'Sauvegarder toutes les modifications'}</span>
+            <span>
+              {saving ? 'Sauvegarde en cours...' : 'Sauvegarder toutes les modifications'}
+            </span>
           </button>
         </div>
       </div>

@@ -1,13 +1,13 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
 import { ArrowLeft, Send, Users } from 'lucide-react'
 
-export default function NewCollaborationPage() {
+function NewCollaborationForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const talentId = searchParams.get('talent')
@@ -29,7 +29,9 @@ export default function NewCollaborationPage() {
 
   const init = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
       if (!user) {
         router.push('/auth/login')
         return
@@ -41,16 +43,16 @@ export default function NewCollaborationPage() {
         .from('profiles')
         .select('id, full_name, email')
         .neq('id', user.id)
-      
+
       setTalents(talentsData || [])
     } catch (error) {
-      console.error('Error:', error)
+      toast.error('Impossible de charger la liste des talents')
     }
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault()
-    
+
     if (!formData.receiver_id) {
       toast.error('Veuillez sélectionner un talent')
       return
@@ -64,22 +66,21 @@ export default function NewCollaborationPage() {
         receiver_id: formData.receiver_id,
         project_title: formData.project_title,
         description: formData.description,
-        required_skills: formData.required_skills ? formData.required_skills.split(',').map(s => s.trim()) : [],
+        required_skills: formData.required_skills
+          ? formData.required_skills.split(',').map(s => s.trim())
+          : [],
         message: formData.message,
         status: 'pending'
       }
 
-      const { error } = await supabase
-        .from('collaborations')
-        .insert([collaborationData])
+      const { error } = await supabase.from('collaborations').insert([collaborationData])
 
       if (error) throw error
 
       toast.success('Demande de collaboration envoyée !')
       router.push('/collaborations')
     } catch (error) {
-      toast.error('Erreur lors de l\'envoi de la demande')
-      console.error('Error:', error)
+      toast.error('Impossible d\'envoyer la demande. Veuillez réessayer.')
     } finally {
       setLoading(false)
     }
@@ -111,12 +112,12 @@ export default function NewCollaborationPage() {
               </label>
               <select
                 value={formData.receiver_id}
-                onChange={(e) => setFormData({ ...formData, receiver_id: e.target.value })}
+                onChange={e => setFormData({ ...formData, receiver_id: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
                 <option value="">Choisir un talent...</option>
-                {talents.map((talent) => (
+                {talents.map(talent => (
                   <option key={talent.id} value={talent.id}>
                     {talent.full_name || talent.email}
                   </option>
@@ -132,7 +133,7 @@ export default function NewCollaborationPage() {
                 type="text"
                 required
                 value={formData.project_title}
-                onChange={(e) => setFormData({ ...formData, project_title: e.target.value })}
+                onChange={e => setFormData({ ...formData, project_title: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Ex: Développement d'une application mobile"
               />
@@ -145,7 +146,7 @@ export default function NewCollaborationPage() {
               <textarea
                 required
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={e => setFormData({ ...formData, description: e.target.value })}
                 rows={6}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Décrivez votre projet, les objectifs, le contexte..."
@@ -159,7 +160,7 @@ export default function NewCollaborationPage() {
               <input
                 type="text"
                 value={formData.required_skills}
-                onChange={(e) => setFormData({ ...formData, required_skills: e.target.value })}
+                onChange={e => setFormData({ ...formData, required_skills: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="React, Node.js, Design UI/UX... (séparées par des virgules)"
               />
@@ -171,7 +172,7 @@ export default function NewCollaborationPage() {
               </label>
               <textarea
                 value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                onChange={e => setFormData({ ...formData, message: e.target.value })}
                 rows={4}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Ajoutez un message personnel pour présenter votre demande..."
@@ -205,5 +206,15 @@ export default function NewCollaborationPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function NewCollaborationPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>}>
+      <NewCollaborationForm />
+    </Suspense>
   )
 }

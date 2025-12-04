@@ -4,9 +4,17 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import { 
-  User, Settings, LogOut, Users, Search, Map, 
-  Award, FolderOpen, MessageSquare, Plus 
+import {
+  User,
+  Settings,
+  LogOut,
+  Users,
+  Search,
+  Map,
+  Award,
+  FolderOpen,
+  MessageSquare,
+  Plus
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -28,8 +36,10 @@ export default function DashboardPage() {
 
   const checkUser = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
+
       if (!user) {
         router.push('/auth/login')
         return
@@ -50,18 +60,21 @@ export default function DashboardPage() {
       // Fetch stats
       await fetchStats(user.id)
     } catch (error) {
-      console.error('Error:', error)
+      toast.error('Erreur lors du chargement du profil')
     } finally {
       setLoading(false)
     }
   }
 
-  const fetchStats = async (userId) => {
+  const fetchStats = async userId => {
     try {
       const [skills, projects, collaborations, badges] = await Promise.all([
         supabase.from('skills').select('id', { count: 'exact' }).eq('user_id', userId),
         supabase.from('projects').select('id', { count: 'exact' }).eq('user_id', userId),
-        supabase.from('collaborations').select('id', { count: 'exact' }).or(`requester_id.eq.${userId},receiver_id.eq.${userId}`),
+        supabase
+          .from('collaborations')
+          .select('id', { count: 'exact' })
+          .or(`requester_id.eq.${userId},receiver_id.eq.${userId}`),
         supabase.from('badges').select('id', { count: 'exact' }).eq('user_id', userId)
       ])
 
@@ -72,7 +85,7 @@ export default function DashboardPage() {
         badges: badges.count || 0
       })
     } catch (error) {
-      console.error('Error fetching stats:', error)
+      // Stats non critiques, pas besoin d'alerter l'utilisateur
     }
   }
 
@@ -108,16 +121,10 @@ export default function DashboardPage() {
               <h1 className="text-2xl font-bold text-gray-900">Talent Map</h1>
             </Link>
             <div className="flex items-center space-x-4">
-              <Link 
-                href="/talents" 
-                className="text-gray-600 hover:text-blue-600 transition"
-              >
+              <Link href="/talents" className="text-gray-600 hover:text-blue-600 transition">
                 Explorer
               </Link>
-              <Link 
-                href="/collaborations" 
-                className="text-gray-600 hover:text-blue-600 transition"
-              >
+              <Link href="/collaborations" className="text-gray-600 hover:text-blue-600 transition">
                 Collaborations
               </Link>
               <button
@@ -135,9 +142,7 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Welcome Section */}
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white mb-8">
-          <h2 className="text-3xl font-bold mb-2">
-            Bienvenue, {profile?.full_name || 'Talent'} !
-          </h2>
+          <h2 className="text-3xl font-bold mb-2">Bienvenue, {profile?.full_name || 'Talent'} !</h2>
           <p className="text-blue-100 mb-4">
             {profile?.is_verified ? (
               <span className="flex items-center space-x-2">
@@ -148,7 +153,7 @@ export default function DashboardPage() {
               'Complétez votre profil pour obtenir le badge Talent Verified'
             )}
           </p>
-          <Link 
+          <Link
             href="/profile/edit"
             className="inline-flex items-center space-x-2 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
           >
@@ -238,7 +243,7 @@ function ActionCard({ icon, title, description, href, buttonText }) {
       <div className="mb-4">{icon}</div>
       <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
       <p className="text-gray-600 mb-4">{description}</p>
-      <Link 
+      <Link
         href={href}
         className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
       >

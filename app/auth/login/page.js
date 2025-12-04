@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
@@ -9,29 +9,35 @@ import { Mail, Lock, LogIn } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirectTo') || '/dashboard'
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   })
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault()
     setLoading(true)
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email: formData.email,
-        password: formData.password,
+        password: formData.password
       })
 
       if (error) throw error
 
       toast.success('Connexion réussie !')
-      router.push('/dashboard')
+      
+      // Direct redirect without delay
+      window.location.replace(redirectTo)
     } catch (error) {
-      toast.error(error.message || 'Erreur de connexion')
-    } finally {
+      const errorMessage = error.message === 'Invalid login credentials' 
+        ? 'Email ou mot de passe incorrect'
+        : 'Une erreur est survenue lors de la connexion'
+      toast.error(errorMessage)
       setLoading(false)
     }
   }
@@ -50,18 +56,16 @@ export default function LoginPage() {
             <p className="text-gray-600 mt-2">Accédez à votre espace talent</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="email"
                   required
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="jean.dupont@example.com"
                 />
@@ -69,16 +73,14 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Mot de passe
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="password"
                   required
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={e => setFormData({ ...formData, password: e.target.value })}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="••••••••"
                 />
@@ -96,7 +98,10 @@ export default function LoginPage() {
                   Se souvenir de moi
                 </label>
               </div>
-              <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
+              <Link
+                href="/auth/forgot-password"
+                className="text-sm text-blue-600 hover:text-blue-700"
+              >
                 Mot de passe oublié ?
               </Link>
             </div>
@@ -120,7 +125,10 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-gray-600">
               Pas encore de compte ?{' '}
-              <Link href="/auth/register" className="text-blue-600 hover:text-blue-700 font-semibold">
+              <Link
+                href="/auth/register"
+                className="text-blue-600 hover:text-blue-700 font-semibold"
+              >
                 S'inscrire
               </Link>
             </p>

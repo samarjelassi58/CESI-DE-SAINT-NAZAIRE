@@ -17,9 +17,9 @@ export default function RegisterPage() {
     confirmPassword: ''
   })
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault()
-    
+
     if (formData.password !== formData.confirmPassword) {
       toast.error('Les mots de passe ne correspondent pas')
       return
@@ -38,7 +38,7 @@ export default function RegisterPage() {
         password: formData.password,
         options: {
           data: {
-            full_name: formData.fullName,
+            full_name: formData.fullName
           }
         }
       })
@@ -48,7 +48,7 @@ export default function RegisterPage() {
       toast.success('Compte créé avec succès ! Vérifiez votre email.')
       router.push('/auth/login')
     } catch (error) {
-      toast.error(error.message || 'Erreur lors de l\'inscription')
+      toast.error(error.message || "Erreur lors de l'inscription")
     } finally {
       setLoading(false)
     }
@@ -70,16 +70,14 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Nom complet
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
                   required
                   value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  onChange={e => setFormData({ ...formData, fullName: e.target.value })}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Jean Dupont"
                 />
@@ -87,16 +85,14 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="email"
                   required
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="jean.dupont@example.com"
                 />
@@ -104,16 +100,14 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Mot de passe
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="password"
                   required
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={e => setFormData({ ...formData, password: e.target.value })}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="••••••••"
                 />
@@ -130,7 +124,7 @@ export default function RegisterPage() {
                   type="password"
                   required
                   value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  onChange={e => setFormData({ ...formData, confirmPassword: e.target.value })}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="••••••••"
                 />

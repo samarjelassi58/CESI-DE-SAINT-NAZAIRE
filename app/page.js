@@ -15,7 +15,10 @@ export default function Home() {
             <Link href="/auth/login" className="text-gray-600 hover:text-blue-600 transition">
               Connexion
             </Link>
-            <Link href="/auth/register" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+            <Link
+              href="/auth/register"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+            >
               S'inscrire
             </Link>
           </nav>
@@ -30,18 +33,18 @@ export default function Home() {
             <span className="text-blue-600"> talents</span>
           </h2>
           <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-            Plateforme collaborative pour cartographier les compétences, 
-            trouver des collaborateurs et développer des projets ensemble.
+            Plateforme collaborative pour cartographier les compétences, trouver des collaborateurs
+            et développer des projets ensemble.
           </p>
           <div className="flex justify-center space-x-4">
-            <Link 
-              href="/auth/register" 
+            <Link
+              href="/auth/register"
               className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition shadow-lg"
             >
               Créer mon profil
             </Link>
-            <Link 
-              href="/talents" 
+            <Link
+              href="/talents"
               className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition shadow-lg border-2 border-blue-600"
             >
               Explorer les talents
@@ -87,14 +90,12 @@ export default function Home() {
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Award className="w-16 h-16 text-white mx-auto mb-4" />
-          <h3 className="text-3xl font-bold text-white mb-4">
-            Badge Talent Verified
-          </h3>
+          <h3 className="text-3xl font-bold text-white mb-4">Badge Talent Verified</h3>
           <p className="text-xl text-blue-100 mb-8">
             Faites valider vos compétences par un responsable et obtenez votre badge officiel
           </p>
-          <Link 
-            href="/auth/register" 
+          <Link
+            href="/auth/register"
             className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition inline-block"
           >
             Commencer maintenant
@@ -113,9 +114,7 @@ export default function Home() {
             <p className="text-gray-400 mb-4">
               Plateforme de cartographie des talents - Défi National CESI
             </p>
-            <p className="text-gray-500 text-sm">
-              © 2025 Talent Map. Tous droits réservés.
-            </p>
+            <p className="text-gray-500 text-sm">© 2025 Talent Map. Tous droits réservés.</p>
           </div>
         </div>
       </footer>

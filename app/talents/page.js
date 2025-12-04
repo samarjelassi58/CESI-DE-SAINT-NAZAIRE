@@ -3,9 +3,23 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import { 
-  Search, Filter, Users, MapPin, Award, 
-  Linkedin, Github, Globe, Mail, X, CheckCircle 
+import Image from 'next/image'
+import toast from 'react-hot-toast'
+import { PAGINATION } from '@/lib/constants'
+import {
+  Search,
+  Filter,
+  Users,
+  MapPin,
+  Award,
+  Linkedin,
+  Github,
+  Globe,
+  Mail,
+  X,
+  CheckCircle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 
 export default function TalentsPage() {
@@ -13,6 +27,7 @@ export default function TalentsPage() {
   const [filteredTalents, setFilteredTalents] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
   const [filters, setFilters] = useState({
     skills: '',
     languages: '',
@@ -20,39 +35,46 @@ export default function TalentsPage() {
     verified: false
   })
 
+  const talentsPerPage = PAGINATION.TALENTS_PER_PAGE
+  const totalPages = Math.ceil(filteredTalents.length / talentsPerPage)
+  const startIndex = (currentPage - 1) * talentsPerPage
+  const endIndex = startIndex + talentsPerPage
+  const currentTalents = filteredTalents.slice(startIndex, endIndex)
+
   useEffect(() => {
     loadTalents()
   }, [])
 
   useEffect(() => {
     filterTalents()
+    setCurrentPage(1) // Reset to page 1 when filters change
   }, [searchTerm, filters, talents])
 
   const loadTalents = async () => {
     try {
       const { data: profiles, error } = await supabase
         .from('profiles')
-        .select(`
+        .select(
+          `
           *,
           skills (*),
           languages (*),
           projects (*),
           passions (*),
           badges!badges_user_id_fkey (*)
-        `)
+        `
+        )
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('Supabase error:', error.message, error.details)
+        toast.error('Erreur lors du chargement des talents')
         throw error
       }
-      
-      console.log('Profiles loaded:', profiles?.length || 0)
+
       setTalents(profiles || [])
       setFilteredTalents(profiles || [])
     } catch (error) {
-      console.error('Error loading talents:', error.message || error)
-      // En cas d'erreur, on affiche quand même une liste vide au lieu de crasher
+      toast.error('Impossible de charger les talents')
       setTalents([])
       setFilteredTalents([])
     } finally {
@@ -65,9 +87,10 @@ export default function TalentsPage() {
 
     // Search by name
     if (searchTerm) {
-      filtered = filtered.filter(talent =>
-        talent.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        talent.bio?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        talent =>
+          talent.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          talent.bio?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
@@ -142,7 +165,7 @@ export default function TalentsPage() {
                 <input
                   type="text"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Rechercher par nom..."
                 />
@@ -152,7 +175,7 @@ export default function TalentsPage() {
             <input
               type="text"
               value={filters.skills}
-              onChange={(e) => setFilters({ ...filters, skills: e.target.value })}
+              onChange={e => setFilters({ ...filters, skills: e.target.value })}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="Compétence..."
             />
@@ -160,7 +183,7 @@ export default function TalentsPage() {
             <input
               type="text"
               value={filters.languages}
-              onChange={(e) => setFilters({ ...filters, languages: e.target.value })}
+              onChange={e => setFilters({ ...filters, languages: e.target.value })}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="Langue..."
             />
@@ -170,7 +193,7 @@ export default function TalentsPage() {
                 <input
                   type="checkbox"
                   checked={filters.available}
-                  onChange={(e) => setFilters({ ...filters, available: e.target.checked })}
+                  onChange={e => setFilters({ ...filters, available: e.target.checked })}
                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <span className="text-sm text-gray-700">Disponibles</span>
@@ -179,7 +202,7 @@ export default function TalentsPage() {
                 <input
                   type="checkbox"
                   checked={filters.verified}
-                  onChange={(e) => setFilters({ ...filters, verified: e.target.checked })}
+                  onChange={e => setFilters({ ...filters, verified: e.target.checked })}
                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
                 <span className="text-sm text-gray-700">Vérifiés</span>
@@ -188,38 +211,118 @@ export default function TalentsPage() {
           </div>
 
           {/* Active Filters */}
-          {(searchTerm || filters.skills || filters.languages || filters.available || filters.verified) && (
+          {(searchTerm ||
+            filters.skills ||
+            filters.languages ||
+            filters.available ||
+            filters.verified) && (
             <div className="mt-4 flex flex-wrap gap-2">
               {searchTerm && (
                 <FilterTag label={`Recherche: ${searchTerm}`} onRemove={() => setSearchTerm('')} />
               )}
               {filters.skills && (
-                <FilterTag label={`Compétence: ${filters.skills}`} onRemove={() => setFilters({ ...filters, skills: '' })} />
+                <FilterTag
+                  label={`Compétence: ${filters.skills}`}
+                  onRemove={() => setFilters({ ...filters, skills: '' })}
+                />
               )}
               {filters.languages && (
-                <FilterTag label={`Langue: ${filters.languages}`} onRemove={() => setFilters({ ...filters, languages: '' })} />
+                <FilterTag
+                  label={`Langue: ${filters.languages}`}
+                  onRemove={() => setFilters({ ...filters, languages: '' })}
+                />
               )}
               {filters.available && (
-                <FilterTag label="Disponibles" onRemove={() => setFilters({ ...filters, available: false })} />
+                <FilterTag
+                  label="Disponibles"
+                  onRemove={() => setFilters({ ...filters, available: false })}
+                />
               )}
               {filters.verified && (
-                <FilterTag label="Vérifiés" onRemove={() => setFilters({ ...filters, verified: false })} />
+                <FilterTag
+                  label="Vérifiés"
+                  onRemove={() => setFilters({ ...filters, verified: false })}
+                />
               )}
             </div>
           )}
         </div>
 
         {/* Results Count */}
-        <div className="mb-4 text-gray-600">
-          <span className="font-semibold">{filteredTalents.length}</span> talent{filteredTalents.length > 1 ? 's' : ''} trouvé{filteredTalents.length > 1 ? 's' : ''}
+        <div className="mb-4 flex justify-between items-center">
+          <div className="text-gray-600">
+            <span className="font-semibold">{filteredTalents.length}</span> talent
+            {filteredTalents.length > 1 ? 's' : ''} trouvé{filteredTalents.length > 1 ? 's' : ''}
+            {totalPages > 1 && (
+              <span className="ml-2 text-sm">
+                (Page {currentPage} sur {totalPages})
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Talents Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTalents.map((talent) => (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {currentTalents.map(talent => (
             <TalentCard key={talent.id} talent={talent} />
           ))}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center space-x-4">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              aria-label="Page précédente"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              <span>Précédent</span>
+            </button>
+
+            <div className="flex items-center space-x-2">
+              {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                let pageNum
+                if (totalPages <= 5) {
+                  pageNum = i + 1
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i
+                } else {
+                  pageNum = currentPage - 2 + i
+                }
+
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-10 h-10 rounded-lg transition ${
+                      currentPage === pageNum
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-white border border-gray-300 hover:bg-gray-50'
+                    }`}
+                    aria-label={`Page ${pageNum}`}
+                    aria-current={currentPage === pageNum ? 'page' : undefined}
+                  >
+                    {pageNum}
+                  </button>
+                )
+              })}
+            </div>
+
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              aria-label="Page suivante"
+            >
+              <span>Suivant</span>
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
 
         {filteredTalents.length === 0 && (
           <div className="text-center py-12">
@@ -269,17 +372,18 @@ function TalentCard({ talent }) {
         )}
       </div>
 
-      {talent.bio && (
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">{talent.bio}</p>
-      )}
+      {talent.bio && <p className="text-gray-600 text-sm mb-4 line-clamp-3">{talent.bio}</p>}
 
       {/* Skills */}
       {talent.skills && talent.skills.length > 0 && (
         <div className="mb-4">
           <h4 className="text-sm font-semibold text-gray-700 mb-2">Compétences</h4>
           <div className="flex flex-wrap gap-1">
-            {talent.skills.slice(0, 5).map((skill) => (
-              <span key={skill.id} className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full">
+            {talent.skills.slice(0, 5).map(skill => (
+              <span
+                key={skill.id}
+                className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full"
+              >
                 {skill.name}
               </span>
             ))}
@@ -295,8 +399,11 @@ function TalentCard({ talent }) {
         <div className="mb-4">
           <h4 className="text-sm font-semibold text-gray-700 mb-2">Langues</h4>
           <div className="flex flex-wrap gap-1">
-            {talent.languages.slice(0, 3).map((lang) => (
-              <span key={lang.id} className="bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded-full">
+            {talent.languages.slice(0, 3).map(lang => (
+              <span
+                key={lang.id}
+                className="bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded-full"
+              >
                 {lang.name} ({lang.proficiency})
               </span>
             ))}
@@ -307,22 +414,37 @@ function TalentCard({ talent }) {
       {/* Social Links */}
       <div className="flex items-center space-x-3 pt-4 border-t border-gray-100">
         {talent.linkedin_url && (
-          <a href={talent.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-600">
+          <a
+            href={talent.linkedin_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-blue-600"
+          >
             <Linkedin className="w-5 h-5" />
           </a>
         )}
         {talent.github_url && (
-          <a href={talent.github_url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-900">
+          <a
+            href={talent.github_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-gray-900"
+          >
             <Github className="w-5 h-5" />
           </a>
         )}
         {talent.portfolio_url && (
-          <a href={talent.portfolio_url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-green-600">
+          <a
+            href={talent.portfolio_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-400 hover:text-green-600"
+          >
             <Globe className="w-5 h-5" />
           </a>
         )}
         <div className="flex-1"></div>
-        <Link 
+        <Link
           href={`/collaborations/new?talent=${talent.id}`}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition"
         >
@@ -333,8 +455,11 @@ function TalentCard({ talent }) {
       {/* Badges */}
       {talent.badges && talent.badges.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-2">
-          {talent.badges.map((badge) => (
-            <div key={badge.id} className="flex items-center space-x-1 bg-yellow-50 text-yellow-700 text-xs px-2 py-1 rounded-full">
+          {talent.badges.map(badge => (
+            <div
+              key={badge.id}
+              className="flex items-center space-x-1 bg-yellow-50 text-yellow-700 text-xs px-2 py-1 rounded-full"
+            >
               <Award className="w-3 h-3" />
               <span>{badge.name}</span>
             </div>

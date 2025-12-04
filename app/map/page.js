@@ -18,9 +18,7 @@ export default function TalentMapPage() {
   const loadData = async () => {
     try {
       // Load all profiles with skills
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select(`
+      const { data: profiles, error: profilesError } = await supabase.from('profiles').select(`
           id,
           full_name,
           is_verified,
@@ -60,18 +58,18 @@ export default function TalentMapPage() {
       const skillsArray = Object.values(skillsMap).sort((a, b) => b.count - a.count)
       setAllSkills(skillsArray)
     } catch (error) {
-      console.error('Error loading data:', error)
+      // Silent fail for map data
     } finally {
       setLoading(false)
     }
   }
 
-  const getSkillColor = (category) => {
+  const getSkillColor = category => {
     const colors = {
-      'technique': '#3b82f6',
-      'linguistique': '#8b5cf6',
+      technique: '#3b82f6',
+      linguistique: '#8b5cf6',
       'soft-skill': '#10b981',
-      'autre': '#f59e0b'
+      autre: '#f59e0b'
     }
     return colors[category] || colors['autre']
   }
@@ -196,7 +194,7 @@ export default function TalentMapPage() {
                 const fontSize = getSkillSize(skill.count, maxSkillCount)
                 const category = Object.keys(skill.categories)[0]
                 const color = getSkillColor(category)
-                
+
                 return (
                   <div
                     key={index}
@@ -210,12 +208,14 @@ export default function TalentMapPage() {
                     title={`${skill.name} - ${skill.count} personne${skill.count > 1 ? 's' : ''}`}
                   >
                     {skill.name}
-                    
+
                     {/* Tooltip */}
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-10">
                       <div className="bg-gray-900 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap">
                         <div className="font-bold">{skill.name}</div>
-                        <div>{skill.count} talent{skill.count > 1 ? 's' : ''}</div>
+                        <div>
+                          {skill.count} talent{skill.count > 1 ? 's' : ''}
+                        </div>
                         <div className="text-gray-300 text-xs">{category}</div>
                       </div>
                     </div>
@@ -229,15 +229,13 @@ export default function TalentMapPage() {
         {/* Bars Chart View */}
         {viewMode === 'bars' && (
           <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">
-              Top 20 Compétences
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">Top 20 Compétences</h2>
             <div className="space-y-4">
               {allSkills.slice(0, 20).map((skill, index) => {
                 const category = Object.keys(skill.categories)[0]
                 const color = getSkillColor(category)
                 const percentage = (skill.count / talents.length) * 100
-                
+
                 return (
                   <div key={index} className="group">
                     <div className="flex items-center justify-between mb-1">
@@ -300,7 +298,10 @@ export default function TalentMapPage() {
                 .filter(s => s.categories['technique'])
                 .slice(0, 5)
                 .map((skill, idx) => (
-                  <div key={idx} className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center py-2 border-b border-gray-100"
+                  >
                     <span className="text-gray-700">{skill.name}</span>
                     <span className="font-semibold text-blue-600">{skill.count}</span>
                   </div>
@@ -318,7 +319,10 @@ export default function TalentMapPage() {
                 .filter(s => s.categories['soft-skill'])
                 .slice(0, 5)
                 .map((skill, idx) => (
-                  <div key={idx} className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center py-2 border-b border-gray-100"
+                  >
                     <span className="text-gray-700">{skill.name}</span>
                     <span className="font-semibold text-green-600">{skill.count}</span>
                   </div>

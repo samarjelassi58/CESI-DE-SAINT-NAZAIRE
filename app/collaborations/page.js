@@ -20,7 +20,9 @@ export default function CollaborationsPage() {
 
   const init = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
       if (!user) {
         router.push('/auth/login')
         return
@@ -28,28 +30,30 @@ export default function CollaborationsPage() {
       setUserId(user.id)
       await loadCollaborations(user.id)
     } catch (error) {
-      console.error('Error:', error)
+      toast.error("Erreur lors de l'initialisation")
     } finally {
       setLoading(false)
     }
   }
 
-  const loadCollaborations = async (userId) => {
+  const loadCollaborations = async userId => {
     try {
       const { data, error } = await supabase
         .from('collaborations')
-        .select(`
+        .select(
+          `
           *,
           requester:requester_id (id, full_name, email),
           receiver:receiver_id (id, full_name, email)
-        `)
+        `
+        )
         .or(`requester_id.eq.${userId},receiver_id.eq.${userId}`)
         .order('created_at', { ascending: false })
 
       if (error) throw error
       setCollaborations(data || [])
     } catch (error) {
-      console.error('Error loading collaborations:', error)
+      toast.error('Erreur lors du chargement des collaborations')
     }
   }
 
@@ -63,9 +67,11 @@ export default function CollaborationsPage() {
       if (error) throw error
 
       toast.success(
-        newStatus === 'accepted' ? 'Collaboration acceptée !' :
-        newStatus === 'declined' ? 'Collaboration refusée' :
-        'Statut mis à jour'
+        newStatus === 'accepted'
+          ? 'Collaboration acceptée !'
+          : newStatus === 'declined'
+            ? 'Collaboration refusée'
+            : 'Statut mis à jour'
       )
 
       await loadCollaborations(userId)
@@ -117,9 +123,7 @@ export default function CollaborationsPage() {
           <button
             onClick={() => setTab('received')}
             className={`flex-1 flex items-center justify-center space-x-2 py-3 rounded-lg font-semibold transition ${
-              tab === 'received'
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-600 hover:bg-gray-100'
+              tab === 'received' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             <Inbox className="w-5 h-5" />
@@ -128,9 +132,7 @@ export default function CollaborationsPage() {
           <button
             onClick={() => setTab('sent')}
             className={`flex-1 flex items-center justify-center space-x-2 py-3 rounded-lg font-semibold transition ${
-              tab === 'sent'
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-600 hover:bg-gray-100'
+              tab === 'sent' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             <Send className="w-5 h-5" />
@@ -145,7 +147,7 @@ export default function CollaborationsPage() {
               {receivedCollaborations.length === 0 ? (
                 <EmptyState message="Aucune demande de collaboration reçue" />
               ) : (
-                receivedCollaborations.map((collab) => (
+                receivedCollaborations.map(collab => (
                   <CollaborationCard
                     key={collab.id}
                     collaboration={collab}
@@ -162,12 +164,8 @@ export default function CollaborationsPage() {
               {sentCollaborations.length === 0 ? (
                 <EmptyState message="Aucune demande de collaboration envoyée" />
               ) : (
-                sentCollaborations.map((collab) => (
-                  <CollaborationCard
-                    key={collab.id}
-                    collaboration={collab}
-                    type="sent"
-                  />
+                sentCollaborations.map(collab => (
+                  <CollaborationCard key={collab.id} collaboration={collab} type="sent" />
                 ))
               )}
             </>
@@ -179,16 +177,38 @@ export default function CollaborationsPage() {
 }
 
 function CollaborationCard({ collaboration, type, onStatusUpdate }) {
-  const getStatusBadge = (status) => {
+  const getStatusBadge = status => {
     const badges = {
-      pending: { bg: 'bg-yellow-100', text: 'text-yellow-800', icon: <Clock className="w-4 h-4" />, label: 'En attente' },
-      accepted: { bg: 'bg-green-100', text: 'text-green-800', icon: <Check className="w-4 h-4" />, label: 'Acceptée' },
-      declined: { bg: 'bg-red-100', text: 'text-red-800', icon: <X className="w-4 h-4" />, label: 'Refusée' },
-      completed: { bg: 'bg-blue-100', text: 'text-blue-800', icon: <Check className="w-4 h-4" />, label: 'Terminée' }
+      pending: {
+        bg: 'bg-yellow-100',
+        text: 'text-yellow-800',
+        icon: <Clock className="w-4 h-4" />,
+        label: 'En attente'
+      },
+      accepted: {
+        bg: 'bg-green-100',
+        text: 'text-green-800',
+        icon: <Check className="w-4 h-4" />,
+        label: 'Acceptée'
+      },
+      declined: {
+        bg: 'bg-red-100',
+        text: 'text-red-800',
+        icon: <X className="w-4 h-4" />,
+        label: 'Refusée'
+      },
+      completed: {
+        bg: 'bg-blue-100',
+        text: 'text-blue-800',
+        icon: <Check className="w-4 h-4" />,
+        label: 'Terminée'
+      }
     }
     const badge = badges[status] || badges.pending
     return (
-      <div className={`flex items-center space-x-1 ${badge.bg} ${badge.text} px-3 py-1 rounded-full text-sm`}>
+      <div
+        className={`flex items-center space-x-1 ${badge.bg} ${badge.text} px-3 py-1 rounded-full text-sm`}
+      >
         {badge.icon}
         <span>{badge.label}</span>
       </div>
@@ -206,7 +226,8 @@ function CollaborationCard({ collaboration, type, onStatusUpdate }) {
             {getStatusBadge(collaboration.status)}
           </div>
           <p className="text-gray-600 text-sm">
-            {type === 'received' ? 'De' : 'À'}: <span className="font-semibold">{partner?.full_name || partner?.email}</span>
+            {type === 'received' ? 'De' : 'À'}:{' '}
+            <span className="font-semibold">{partner?.full_name || partner?.email}</span>
           </p>
           <p className="text-gray-500 text-xs mt-1">
             {new Date(collaboration.created_at).toLocaleDateString('fr-FR', {

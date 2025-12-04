@@ -22,10 +22,12 @@ Une plateforme web collaborative innovante permettant de découvrir, cartographi
 ## ✨ Fonctionnalités
 
 ### 🔐 Authentification
+
 - Inscription / Connexion sécurisée via Supabase Auth
 - Gestion de profil complet
 
 ### 👤 Profils Talents
+
 - **Informations personnelles** : nom, localisation, bio, contacts
 - **Compétences techniques** : catégories, niveaux d'expertise, années d'expérience
 - **Langues** : niveaux selon le CECRL (A1 à C2)
@@ -34,28 +36,33 @@ Une plateforme web collaborative innovante permettant de découvrir, cartographi
 - Indicateur de disponibilité
 
 ### 🔍 Recherche Avancée
+
 - Recherche par nom, compétences, langues
 - Filtres : disponibilité, profils vérifiés
 - Affichage en cartes avec informations détaillées
 
 ### 🗺️ Carte Interactive des Talents
+
 - **Nuage de compétences** : visualisation dynamique selon la popularité
 - **Graphiques à barres** : top 20 des compétences les plus répandues
 - Statistiques globales : nombre de talents, compétences uniques
 - Légende par catégories (technique, linguistique, soft-skills)
 
 ### 🤝 Système de Collaboration
+
 - Demandes de collaboration entre talents
 - Gestion des demandes reçues/envoyées
 - Statuts : en attente, acceptée, refusée, terminée
 - Description de projet et compétences recherchées
 
 ### 🏆 Badges & Vérification
+
 - Badge **"Talent Verified"** validé par un administrateur
 - Autres badges : Expert, Mentor, Collaborator, Innovator
 - Visible sur les profils et dans les recherches
 
 ### 👨‍💼 Dashboard Administrateur
+
 - Gestion des utilisateurs
 - Validation des badges
 - Statistiques de la plateforme
@@ -63,26 +70,29 @@ Une plateforme web collaborative innovante permettant de découvrir, cartographi
 ## 🛠 Stack Technique
 
 ### Frontend
-| Technologie | Version | Usage |
-|------------|---------|-------|
-| **Next.js** | 16.0.7 | Framework React avec App Router et Turbopack |
-| **React** | 19.0 | Bibliothèque UI |
-| **Tailwind CSS** | 3.4.16 | Styling moderne et responsive |
-| **Lucide React** | 0.555.0 | Bibliothèque d'icônes |
-| **Recharts** | 3.5.1 | Graphiques et visualisations de données |
-| **React Hot Toast** | 2.6.0 | Système de notifications |
+
+| Technologie         | Version | Usage                                        |
+| ------------------- | ------- | -------------------------------------------- |
+| **Next.js**         | 16.0.7  | Framework React avec App Router et Turbopack |
+| **React**           | 19.0    | Bibliothèque UI                              |
+| **Tailwind CSS**    | 3.4.16  | Styling moderne et responsive                |
+| **Lucide React**    | 0.555.0 | Bibliothèque d'icônes                        |
+| **Recharts**        | 3.5.1   | Graphiques et visualisations de données      |
+| **React Hot Toast** | 2.6.0   | Système de notifications                     |
 
 ### Backend & Base de données
-| Service | Fonctionnalité |
-|---------|----------------|
-| **Supabase** | Backend as a Service complet |
-| └─ PostgreSQL | Base de données relationnelle |
-| └─ Auth | Authentification sécurisée avec JWT |
-| └─ RLS | Row Level Security pour permissions |
-| └─ Real-time | Mises à jour en temps réel |
-| └─ Storage | Stockage de fichiers (avatars, images) |
+
+| Service       | Fonctionnalité                         |
+| ------------- | -------------------------------------- |
+| **Supabase**  | Backend as a Service complet           |
+| └─ PostgreSQL | Base de données relationnelle          |
+| └─ Auth       | Authentification sécurisée avec JWT    |
+| └─ RLS        | Row Level Security pour permissions    |
+| └─ Real-time  | Mises à jour en temps réel             |
+| └─ Storage    | Stockage de fichiers (avatars, images) |
 
 ### Architecture
+
 - **App Router** de Next.js pour le routing côté serveur
 - **Server Components** pour optimisation des performances
 - **API Routes** pour endpoints backend
@@ -92,6 +102,7 @@ Une plateforme web collaborative innovante permettant de découvrir, cartographi
 ## 📦 Installation Locale
 
 ### Prérequis
+
 - **Node.js** 18.x ou supérieur ([Télécharger](https://nodejs.org/))
 - **npm** ou **yarn**
 - Compte **Supabase** gratuit ([Créer un compte](https://supabase.com))
@@ -100,12 +111,14 @@ Une plateforme web collaborative innovante permettant de découvrir, cartographi
 ### Guide d'installation rapide
 
 #### 1. Cloner le repository
+
 ```bash
 git clone https://github.com/samarjelassi58/CESI-DE-SAINT-NAZAIRE.git
 cd CESI-DE-SAINT-NAZAIRE
 ```
 
 #### 2. Installer les dépendances
+
 ```bash
 npm install
 # ou
@@ -113,7 +126,9 @@ yarn install
 ```
 
 #### 3. Configurer les variables d'environnement
+
 Créer un fichier `.env.local` à la racine :
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=votre_url_supabase
 NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_cle_anon_supabase
@@ -122,6 +137,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_cle_anon_supabase
 4. **Configurer Supabase** (voir section suivante)
 
 5. **Lancer le serveur de développement**
+
 ```bash
 npm run dev
 ```
@@ -131,6 +147,7 @@ Ouvrir [http://localhost:3000](http://localhost:3000)
 ## 🗄️ Configuration Supabase
 
 ### 1. Créer un projet Supabase
+
 - Aller sur [supabase.com](https://supabase.com)
 - Créer un nouveau projet
 - Noter l'URL et la clé API (anon key)
@@ -150,6 +167,7 @@ Dans l'éditeur SQL de Supabase, exécuter le script `supabase-schema.sql` :
 ### 3. Activer l'authentification Email
 
 Dans Supabase Dashboard :
+
 - Authentication → Settings
 - Activer "Email" provider
 - Configurer les URLs de redirection
@@ -165,16 +183,17 @@ Dans Supabase Dashboard :
 
 Vous pouvez utiliser les comptes pré-configurés suivants pour tester la plateforme :
 
-| Email | Mot de passe | Rôle | Profil |
-|-------|--------------|------|--------|
-| `admin@cesi.fr` | `Admin123!` | Administrateur | Accès complet + validation badges |
-| `marie.martin@cesi.fr` | `Marie123!` | Utilisateur | Développeuse Full-Stack |
-| `pierre.bernard@cesi.fr` | `Pierre123!` | Utilisateur | Data Scientist |
-| `sophie.dubois@cesi.fr` | `Sophie123!` | Utilisateur | Designer UX/UI |
-| `lucas.petit@cesi.fr` | `Lucas123!` | Utilisateur | DevOps Engineer |
-| `julie.moreau@cesi.fr` | `Julie123!` | Utilisateur | Chef de Projet |
+| Email                    | Mot de passe | Rôle           | Profil                            |
+| ------------------------ | ------------ | -------------- | --------------------------------- |
+| `admin@cesi.fr`          | `Admin123!`  | Administrateur | Accès complet + validation badges |
+| `marie.martin@cesi.fr`   | `Marie123!`  | Utilisateur    | Développeuse Full-Stack           |
+| `pierre.bernard@cesi.fr` | `Pierre123!` | Utilisateur    | Data Scientist                    |
+| `sophie.dubois@cesi.fr`  | `Sophie123!` | Utilisateur    | Designer UX/UI                    |
+| `lucas.petit@cesi.fr`    | `Lucas123!`  | Utilisateur    | DevOps Engineer                   |
+| `julie.moreau@cesi.fr`   | `Julie123!`  | Utilisateur    | Chef de Projet                    |
 
 ### Base de données pré-remplie
+
 - ✅ **10 profils** complets avec bios et localisations
 - ✅ **112 compétences** réparties en 3 catégories (technique, soft-skills, linguistique)
 - ✅ **36 langues** avec niveaux CECRL (A1-C2)
@@ -186,11 +205,13 @@ Vous pouvez utiliser les comptes pré-configurés suivants pour tester la platef
 ## 🚀 Guide d'Utilisation
 
 ### 1. Première Connexion
+
 - Accéder à `/auth/login`
 - Utiliser un des comptes de test ci-dessus
 - Ou créer un nouveau compte sur `/auth/register`
 
 ### 2. Explorer les Fonctionnalités
+
 - Aller sur Dashboard → "Modifier mon profil"
 - Ajouter :
   - Informations personnelles
@@ -200,16 +221,19 @@ Vous pouvez utiliser les comptes pré-configurés suivants pour tester la platef
   - Passions
 
 ### 3. Explorer les talents
+
 - `/talents` : Recherche et filtres
 - `/map` : Visualisation en carte interactive
 
 ### 4. Collaborer
+
 - Trouver un talent
 - Cliquer sur "Contacter"
 - Décrire le projet
 - Envoyer la demande
 
 ### 5. Obtenir le badge Verified
+
 - Compléter son profil
 - Attendre la validation par un administrateur
 
@@ -228,6 +252,7 @@ Vous pouvez utiliser les comptes pré-configurés suivants pour tester la platef
    - Branche : `main`
 
 2. **Déployer sur Vercel**
+
 - Aller sur [vercel.com](https://vercel.com)
 - Importer le repository GitHub
 - Ajouter les variables d'environnement :
@@ -236,10 +261,12 @@ Vous pouvez utiliser les comptes pré-configurés suivants pour tester la platef
 - Déployer
 
 3. **Configurer le domaine**
+
 - Le lien Vercel sera généré automatiquement
 - Partager ce lien pour évaluation
 
 ### Autres options
+
 - **Netlify** : Similar à Vercel
 - **Railway** : Avec base de données intégrée
 - **VPS** : Via PM2 et Nginx
@@ -249,6 +276,7 @@ Vous pouvez utiliser les comptes pré-configurés suivants pour tester la platef
 ### 1. Qualité technique – 40 points
 
 ✅ **Fonctionnalités réalisées (20 pts)**
+
 - Profil talent complet : compétences, langues, projets, passions
 - Recherche avancée avec filtres multiples
 - Visualisation : nuage de compétences + graphiques
@@ -256,12 +284,14 @@ Vous pouvez utiliser les comptes pré-configurés suivants pour tester la platef
 - Badge Talent Verified avec validation admin
 
 ✅ **Stabilité & utilisation réelle (10 pts)**
+
 - Navigation fluide et intuitive
 - Pas de bugs majeurs
 - Responsive design (mobile/tablet/desktop)
 - Notifications en temps réel
 
 ✅ **Qualité du code (10 pts)**
+
 - Structure Next.js App Router
 - Composants réutilisables
 - Code commenté et lisible
@@ -270,12 +300,14 @@ Vous pouvez utiliser les comptes pré-configurés suivants pour tester la platef
 ### 2. UX / UI – 30 points
 
 ✅ **Ergonomie (15 pts)**
+
 - Interface intuitive
 - Parcours utilisateur fluide
 - Formulaires clairs avec validation
 - Messages d'erreur explicites
 
 ✅ **Design & lisibilité (15 pts)**
+
 - Design moderne avec Tailwind CSS
 - Palette de couleurs cohérente
 - Typographie lisible
@@ -284,11 +316,13 @@ Vous pouvez utiliser les comptes pré-configurés suivants pour tester la platef
 ### 3. Pertinence & cohérence – 30 points
 
 ✅ **Adéquation au sujet (15 pts)**
+
 - Répond au besoin de cartographie des talents
 - Facilite la mise en relation
 - Valorise les compétences
 
 ✅ **Cohérence et maturité (15 pts)**
+
 - Solution homogène et professionnelle
 - Utilisable immédiatement
 - Scalable et maintenable
@@ -305,14 +339,14 @@ Vous pouvez utiliser les comptes pré-configurés suivants pour tester la platef
 
 ### Accès à la Plateforme
 
-| Information | Détails |
-|------------|----------|
+| Information           | Détails                                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | **Repository GitHub** | [https://github.com/samarjelassi58/CESI-DE-SAINT-NAZAIRE](https://github.com/samarjelassi58/CESI-DE-SAINT-NAZAIRE) |
-| **URL Production** | *À déployer sur Vercel* |
-| **Compte Admin** | `admin@cesi.fr` / `Admin123!` |
-| **Comptes Test** | Voir section [Démonstration](#-démonstration) |
-| **Documentation** | Ce README + `DEPLOYMENT_GUIDE.md` |
-| **Base de données** | Supabase (scripts fournis) |
+| **URL Production**    | _À déployer sur Vercel_                                                                                            |
+| **Compte Admin**      | `admin@cesi.fr` / `Admin123!`                                                                                      |
+| **Comptes Test**      | Voir section [Démonstration](#-démonstration)                                                                      |
+| **Documentation**     | Ce README + `DEPLOYMENT_GUIDE.md`                                                                                  |
+| **Base de données**   | Supabase (scripts fournis)                                                                                         |
 
 ### Scripts Fournis
 

@@ -1,0 +1,53 @@
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+
+export async function proxy(req: NextRequest) {
+  const res = NextResponse.next()
+  
+  // Protected routes that require authentication
+  const protectedPaths = ['/dashboard', '/profile', '/collaborations', '/admin']
+  const isProtectedPath = protectedPaths.some(path => req.nextUrl.pathname.startsWith(path))
+
+  if (isProtectedPath) {
+    // Create a Supabase client to check session
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      auth: {
+        persistSession: false
+      }
+    })
+
+    // Get session from request cookies
+    const authToken = req.cookies.get('sb-auth-token')
+    
+    if (!authToken) {
+      const redirectUrl = new URL('/auth/login', req.url)
+      redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname)
+      return NextResponse.redirect(redirectUrl)
+    }
+  }
+
+  // Redirect authenticated users away from auth pages
+  const isAuthPage = req.nextUrl.pathname.startsWith('/auth')
+  if (isAuthPage) {
+    const authToken = req.cookies.get('sb-auth-token')
+    if (authToken) {
+      return NextResponse.redirect(new URL('/dashboard', req.url))
+    }
+  }
+
+  return res
+}
+
+export const config = {
+  matcher: [
+    '/dashboard/:path*',
+    '/profile/:path*',
+    '/collaborations/:path*',
+    '/admin/:path*',
+    '/auth/:path*'
+  ]
+}

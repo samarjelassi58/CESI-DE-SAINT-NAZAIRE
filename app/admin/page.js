@@ -28,7 +28,9 @@ export default function AdminPage() {
 
   const checkAdminAndLoadData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
       if (!user) {
         router.push('/auth/login')
         return
@@ -52,7 +54,7 @@ export default function AdminPage() {
       await loadUsers()
       await loadPendingVerifications()
     } catch (error) {
-      console.error('Error:', error)
+      toast.error('Erreur lors du chargement des données admin')
     } finally {
       setLoading(false)
     }
@@ -76,7 +78,7 @@ export default function AdminPage() {
         pendingBadges: users.data?.filter(u => !u.is_verified).length || 0
       })
     } catch (error) {
-      console.error('Error loading stats:', error)
+      // Silent fail for stats
     }
   }
 
@@ -84,19 +86,21 @@ export default function AdminPage() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select(`
+        .select(
+          `
           *,
           skills (count),
           projects (count),
           badges (count)
-        `)
+        `
+        )
         .order('created_at', { ascending: false })
         .limit(20)
 
       if (error) throw error
       setUsers(data || [])
     } catch (error) {
-      console.error('Error loading users:', error)
+      toast.error('Erreur lors du chargement des utilisateurs')
     }
   }
 
@@ -104,11 +108,13 @@ export default function AdminPage() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select(`
+        .select(
+          `
           *,
           skills (count),
           projects (count)
-        `)
+        `
+        )
         .eq('is_verified', false)
         .order('created_at', { ascending: false })
 
@@ -131,18 +137,20 @@ export default function AdminPage() {
 
       // If verifying, create a Talent Verified badge
       if (verify) {
-        const { data: { user } } = await supabase.auth.getUser()
-        
-        const { error: badgeError } = await supabase
-          .from('badges')
-          .insert([{
+        const {
+          data: { user }
+        } = await supabase.auth.getUser()
+
+        const { error: badgeError } = await supabase.from('badges').insert([
+          {
             user_id: userId,
             type: 'verified',
             name: 'Talent Verified',
             description: 'Profil vérifié par un administrateur',
             verified_by: user.id,
             verified_at: new Date().toISOString()
-          }])
+          }
+        ])
 
         if (badgeError) throw badgeError
       }
@@ -152,27 +160,22 @@ export default function AdminPage() {
       await loadUsers()
       await loadPendingVerifications()
     } catch (error) {
-      console.error('Error verifying user:', error)
-      toast.error('Erreur lors de la vérification')
+      toast.error('Impossible de vérifier l\'utilisateur. Veuillez réessayer.')
     }
   }
 
   const handleToggleRole = async (userId, currentRole) => {
     const newRole = currentRole === 'admin' ? 'user' : 'admin'
-    
+
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ role: newRole })
-        .eq('id', userId)
+      const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId)
 
       if (error) throw error
 
       toast.success(`Rôle changé en ${newRole}`)
       await loadUsers()
     } catch (error) {
-      console.error('Error changing role:', error)
-      toast.error('Erreur lors du changement de rôle')
+      toast.error('Impossible de modifier le rôle. Veuillez réessayer.')
     }
   }
 
@@ -254,8 +257,11 @@ export default function AdminPage() {
               <span>Demandes de vérification en attente ({pendingVerifications.length})</span>
             </h2>
             <div className="space-y-4">
-              {pendingVerifications.map((user) => (
-                <div key={user.id} className="flex items-center justify-between border-b border-gray-200 pb-4">
+              {pendingVerifications.map(user => (
+                <div
+                  key={user.id}
+                  className="flex items-center justify-between border-b border-gray-200 pb-4"
+                >
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900">{user.full_name || 'Sans nom'}</h3>
                     <p className="text-sm text-gray-600">{user.email}</p>
@@ -275,9 +281,7 @@ export default function AdminPage() {
                       <CheckCircle className="w-4 h-4" />
                       <span>Vérifier</span>
                     </button>
-                    <button
-                      className="flex items-center space-x-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
-                    >
+                    <button className="flex items-center space-x-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">
                       <span>Ignorer</span>
                     </button>
                   </div>
@@ -308,10 +312,12 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
+                {users.map(user => (
                   <tr key={user.id} className="border-b border-gray-100">
                     <td className="py-3">
-                      <div className="font-medium text-gray-900">{user.full_name || 'Sans nom'}</div>
+                      <div className="font-medium text-gray-900">
+                        {user.full_name || 'Sans nom'}
+                      </div>
                       <div className="text-xs text-gray-500">
                         {new Date(user.created_at).toLocaleDateString('fr-FR')}
                       </div>
