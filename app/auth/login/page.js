@@ -31,8 +31,10 @@ export default function LoginPage() {
 
       toast.success('Connexion réussie !')
       
-      // Direct redirect without delay
-      window.location.replace(redirectTo)
+      // Wait for session to be persisted
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      window.location.href = redirectTo
     } catch (error) {
       const errorMessage = error.message === 'Invalid login credentials' 
         ? 'Email ou mot de passe incorrect'
@@ -56,7 +58,7 @@ export default function LoginPage() {
             <p className="text-gray-600 mt-2">Accédez à votre espace talent</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
               <div className="relative">
