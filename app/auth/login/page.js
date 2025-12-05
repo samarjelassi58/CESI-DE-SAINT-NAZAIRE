@@ -1,14 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
 import { Mail, Lock, LogIn } from 'lucide-react'
 
-export default function LoginPage() {
-  const router = useRouter()
+function LoginForm() {
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') || '/dashboard'
   const [loading, setLoading] = useState(false)
@@ -140,9 +139,31 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <Link href="/" className="text-gray-600 hover:text-gray-900">
             ← Retour à l'accueil
-          </Link>
+          </div>
         </div>
       </div>
-    </div>
+    )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="text-center">
+              <div className="flex justify-center mb-4">
+                <div className="bg-blue-600 p-3 rounded-full animate-pulse">
+                  <LogIn className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <p className="text-gray-600">Chargement...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }
