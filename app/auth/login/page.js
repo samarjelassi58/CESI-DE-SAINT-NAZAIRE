@@ -139,7 +139,7 @@ function LoginForm() {
         <div className="mt-6 text-center">
           <Link href="/" className="text-gray-600 hover:text-gray-900">
             ← Retour à l'accueil
-          </div>
+          </Link>
         </div>
       </div>
     )
